@@ -31,6 +31,7 @@ import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -57,16 +58,16 @@ import java.util.List;
  * Defines the metadata for the Snowflake Bulk Loader step.  Provides functions to store
  * and read this metadata in ktr files and on a repository.
  */
-@SuppressWarnings( "WeakerAccess" )
-@Step( id = "SnowflakeBulkLoader", image = "SBL.svg", name = "Step.Name", description = "Step.Description",
+@SuppressWarnings ( "WeakerAccess" )
+@Step ( id = "SnowflakeBulkLoader", image = "SBL.svg", name = "Step.Name", description = "Step.Description",
   categoryDescription = "Category.Description",
   i18nPackageName = "org.inquidia.kettle.plugins.snowflakeplugin.bulkloader",
   documentationUrl = "https://github.com/inquidia/SnowflakePlugin/wiki/Bulk-Loader",
   casesUrl = "https://github.com/inquidia/SnowflakePlugin/issues",
   isSeparateClassLoaderNeeded = false )
-@InjectionSupported( localizationPrefix = "SnowflakeBulkLoader.Injection.", groups = { "OUTPUT_FIELDS" } )
+@InjectionSupported ( localizationPrefix = "SnowflakeBulkLoader.Injection.", groups = { "OUTPUT_FIELDS" } )
 public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = SnowflakeBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
+  private static final Class<?> PKG = SnowflakeBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!
 
   protected static final String DEBUG_MODE_VAR = "${SNOWFLAKE_DEBUG_MODE}";
   /*
@@ -110,15 +111,15 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
   /**
    * The valid location type codes {@value}
    */
-  public static final String[] LOCATION_TYPE_CODES = { "user", "table", "internal_stage" };
-  public static final int LOCATION_TYPE_USER = 0;
-  public static final int LOCATION_TYPE_TABLE = 1;
-  public static final int LOCATION_TYPE_INTERNAL_STAGE = 2;
+  protected static final String[] LOCATION_TYPE_CODES = { "user", "table", "internal_stage" };
+  protected static final int LOCATION_TYPE_USER = 0;
+  protected static final int LOCATION_TYPE_TABLE = 1;
+  protected static final int LOCATION_TYPE_INTERNAL_STAGE = 2;
 
   /**
    * The valid on error codes {@value}
    */
-  public static final String[] ON_ERROR_CODES = { "continue", "skip_file", "skip_file_percent", "abort" };
+  protected static final String[] ON_ERROR_CODES = { "continue", "skip_file", "skip_file_percent", "abort" };
   public static final int ON_ERROR_CONTINUE = 0;
   public static final int ON_ERROR_SKIP_FILE = 1;
   public static final int ON_ERROR_SKIP_FILE_PERCENT = 2;
@@ -127,7 +128,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
   /**
    * The valid data type codes {@value}
    */
-  public static final String[] DATA_TYPE_CODES = { "csv", "json" };
+  protected static final String[] DATA_TYPE_CODES = { "csv", "json" };
   public static final int DATA_TYPE_CSV = 0;
   public static final int DATA_TYPE_JSON = 1;
 
@@ -144,122 +145,122 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
   /**
    * The schema to use
    */
-  @Injection( name = "TARGET_SCHEMA" )
+  @Injection ( name = "TARGET_SCHEMA" )
   private String targetSchema;
 
   /**
    * The table to load
    */
-  @Injection( name = "TARGET_TABLE" )
+  @Injection ( name = "TARGET_TABLE" )
   private String targetTable;
 
   /**
    * The location type (user, table, internal_stage)
    */
-  @Injection( name = "LOCATION_TYPE" )
+  @Injection ( name = "LOCATION_TYPE" )
   private String locationType;
 
   /**
    * If location type = Internal stage, the stage name to use
    */
-  @Injection( name = "STAGE_NAME" )
+  @Injection ( name = "STAGE_NAME" )
   private String stageName;
 
   /**
    * The work directory to use when writing temp files
    */
-  @Injection( name = "WORK_DIRECTORY" )
+  @Injection ( name = "WORK_DIRECTORY" )
   private String workDirectory;
 
   /**
    * What to do when an error is encountered (continue, skip_file, skip_file_percent, abort)
    */
-  @Injection( name = "ON_ERROR" )
+  @Injection ( name = "ON_ERROR" )
   private String onError;
 
   /**
    * When On Error = Skip File, the number of error rows before skipping the file, if 0 skip immediately.
    * When On Error = Skip File Percent, the percentage of the file to error before skipping the file.
    */
-  @Injection( name = "ERROR_LIMIT" )
+  @Injection ( name = "ERROR_LIMIT" )
   private String errorLimit;
 
   /**
    * The size to split the data at to enable faster bulk loading
    */
-  @Injection( name = "SPLIT_SIZE" )
+  @Injection ( name = "SPLIT_SIZE" )
   private String splitSize;
 
   /**
    * Should the files loaded to the staging location be removed
    */
-  @Injection( name = "REMOVE_FILES" )
+  @Injection ( name = "REMOVE_FILES" )
   private boolean removeFiles;
 
   /**
    * The target step for bulk loader output
    */
-  @Injection( name = "OUTPUT_TARGET_STEP" )
+  @Injection ( name = "OUTPUT_TARGET_STEP" )
   private String outputTargetStep;
 
   /**
    * The data type of the data (csv, json)
    */
-  @Injection( name = "DATA_TYPE" )
+  @Injection ( name = "DATA_TYPE" )
   private String dataType;
 
   /**
    * CSV: Trim whitespace
    */
-  @Injection( name = "TRIM_WHITESPACE" )
+  @Injection ( name = "TRIM_WHITESPACE" )
   private boolean trimWhitespace;
 
   /**
    * CSV: Convert column value to null if
    */
-  @Injection( name = "NULL_IF" )
+  @Injection ( name = "NULL_IF" )
   private String nullIf;
 
   /**
    * CSV: Should the load fail if the column count in the row does not match the column count in the table
    */
-  @Injection( name = "ERROR_COLUMN_MISMATCH" )
+  @Injection ( name = "ERROR_COLUMN_MISMATCH" )
   private boolean errorColumnMismatch;
 
   /**
    * JSON: Strip nulls from JSON
    */
-  @Injection( name = "STRIP_NULL" )
+  @Injection ( name = "STRIP_NULL" )
   private boolean stripNull;
 
   /**
    * JSON: Ignore UTF8 Errors
    */
-  @Injection( name = "IGNORE_UTF8" )
+  @Injection ( name = "IGNORE_UTF8" )
   private boolean ignoreUtf8;
 
   /**
    * JSON: Allow duplicate elements
    */
-  @Injection( name = "ALLOW_DUPLICATE_ELEMENTS" )
+  @Injection ( name = "ALLOW_DUPLICATE_ELEMENTS" )
   private boolean allowDuplicateElements;
 
   /**
    * JSON: Enable Octal number parsing
    */
-  @Injection( name = "ENABLE_OCTAL" )
+  @Injection ( name = "ENABLE_OCTAL" )
   private boolean enableOctal;
 
   /**
    * CSV: Specify field to table mapping
    */
-  @Injection( name = "SPECIFY_FIELDS" )
+  @Injection ( name = "SPECIFY_FIELDS" )
   private boolean specifyFields;
 
   /**
    * JSON: JSON field name
    */
-  @Injection( name = "JSON_FIELD" )
+  @Injection ( name = "JSON_FIELD" )
   private String jsonField;
 
   /**
@@ -337,7 +338,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    * @param locationType The location type code from @LOCATION_TYPE_CODES
    * @throws KettleException Invalid location type
    */
-  @SuppressWarnings( "unused" )
+  @SuppressWarnings ( "unused" )
   public void setLocationType( String locationType ) throws KettleException {
     for ( String LOCATION_TYPE_CODE : LOCATION_TYPE_CODES ) {
       if ( LOCATION_TYPE_CODE.equals( locationType ) ) {
@@ -355,7 +356,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    */
   public int getLocationTypeId() {
     for ( int i = 0; i < LOCATION_TYPE_CODES.length; i++ ) {
-      if ( LOCATION_TYPE_CODES[i].equals( locationType ) ) {
+      if ( LOCATION_TYPE_CODES[ i ].equals( locationType ) ) {
         return i;
       }
     }
@@ -368,7 +369,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    * @param locationTypeId The location type id
    */
   public void setLocationTypeById( int locationTypeId ) {
-    locationType = LOCATION_TYPE_CODES[locationTypeId];
+    locationType = LOCATION_TYPE_CODES[ locationTypeId ];
   }
 
   /**
@@ -376,7 +377,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    *
    * @return The name of the Snowflake stage
    */
-  @SuppressWarnings( "unused" )
+  @SuppressWarnings ( "unused" )
   public String getStageName() {
     return stageName;
   }
@@ -386,7 +387,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    *
    * @param stageName The name of the Snowflake stage
    */
-  @SuppressWarnings( "unused" )
+  @SuppressWarnings ( "unused" )
   public void setStageName( String stageName ) {
     this.stageName = stageName;
   }
@@ -420,7 +421,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    * @param onError The error code from @ON_ERROR_CODES
    * @throws KettleException
    */
-  @SuppressWarnings( "unused" )
+  @SuppressWarnings ( "unused" )
   public void setOnError( String onError ) throws KettleException {
     for ( String ON_ERROR_CODE : ON_ERROR_CODES ) {
       if ( ON_ERROR_CODE.equals( onError ) ) {
@@ -440,7 +441,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    */
   public int getOnErrorId() {
     for ( int i = 0; i < ON_ERROR_CODES.length; i++ ) {
-      if ( ON_ERROR_CODES[i].equals( onError ) ) {
+      if ( ON_ERROR_CODES[ i ].equals( onError ) ) {
         return i;
       }
     }
@@ -451,7 +452,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    * @param onErrorId The ID of the error method
    */
   public void setOnErrorById( int onErrorId ) {
-    onError = ON_ERROR_CODES[onErrorId];
+    onError = ON_ERROR_CODES[ onErrorId ];
   }
 
   /**
@@ -513,6 +514,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
 
   /**
    * Set the step to direct bulk loader output to.
+   *
    * @param outputTargetStep The step name
    */
   public void setOutputTargetStep( String outputTargetStep ) {
@@ -532,7 +534,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    * @param dataType The data type code from @DATA_TYPE_CODES
    * @throws KettleException Invalid value
    */
-  @SuppressWarnings( "unused" )
+  @SuppressWarnings ( "unused" )
   public void setDataType( String dataType ) throws KettleException {
     for ( String DATA_TYPE_CODE : DATA_TYPE_CODES ) {
       if ( DATA_TYPE_CODE.equals( dataType ) ) {
@@ -548,11 +550,12 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
   /**
    * Gets the data type ID, which is equivalent to the location of the data type code within the
    * (DATA_TYPE_CODES) array
+   *
    * @return The ID of the data type
    */
   public int getDataTypeId() {
     for ( int i = 0; i < DATA_TYPE_CODES.length; i++ ) {
-      if ( DATA_TYPE_CODES[i].equals( dataType ) ) {
+      if ( DATA_TYPE_CODES[ i ].equals( dataType ) ) {
         return i;
       }
     }
@@ -562,10 +565,11 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
   /**
    * Takes the ID of the data type and sets the data type code to the equivalent location within the
    * DATA_TYPE_CODES array
+   *
    * @param dataTypeId The ID of the data type
    */
   public void setDataTypeById( int dataTypeId ) {
-    dataType = DATA_TYPE_CODES[dataTypeId];
+    dataType = DATA_TYPE_CODES[ dataTypeId ];
   }
 
   /**
@@ -744,13 +748,14 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    *
    * @param snowflakeBulkLoaderFields The array containing the stream to table field mapping
    */
-  @SuppressWarnings( "unused" )
+  @SuppressWarnings ( "unused" )
   public void setSnowflakeBulkLoaderFields( SnowflakeBulkLoaderField[] snowflakeBulkLoaderFields ) {
     this.snowflakeBulkLoaderFields = snowflakeBulkLoaderFields;
   }
 
   /**
    * Get the file date that is appended in the file names
+   *
    * @return The file date that is appended in the file names
    */
   public String getFileDate() {
@@ -776,7 +781,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    * @param numberFields The number of fields to use in the field mapping
    */
   public void allocate( int numberFields ) {
-    snowflakeBulkLoaderFields = new SnowflakeBulkLoaderField[numberFields];
+    snowflakeBulkLoaderFields = new SnowflakeBulkLoaderField[ numberFields ];
   }
 
   /**
@@ -791,7 +796,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
     retval.allocate( nrfields );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      retval.snowflakeBulkLoaderFields[i] = (SnowflakeBulkLoaderField) snowflakeBulkLoaderFields[i].clone();
+      retval.snowflakeBulkLoaderFields[ i ] = (SnowflakeBulkLoaderField) snowflakeBulkLoaderFields[ i ].clone();
     }
 
     return retval;
@@ -837,9 +842,9 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, FIELD, i );
 
-        snowflakeBulkLoaderFields[i] = new SnowflakeBulkLoaderField();
-        snowflakeBulkLoaderFields[i].setStreamField( XMLHandler.getTagValue( fnode, STREAM_FIELD ) );
-        snowflakeBulkLoaderFields[i].setTableField( XMLHandler.getTagValue( fnode, TABLE_FIELD ) );
+        snowflakeBulkLoaderFields[ i ] = new SnowflakeBulkLoaderField();
+        snowflakeBulkLoaderFields[ i ].setStreamField( XMLHandler.getTagValue( fnode, STREAM_FIELD ) );
+        snowflakeBulkLoaderFields[ i ].setTableField( XMLHandler.getTagValue( fnode, TABLE_FIELD ) );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to load step info from XML", e );
@@ -850,12 +855,12 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    * Sets the default values for all metadata attributes.
    */
   public void setDefault() {
-    locationType = LOCATION_TYPE_CODES[LOCATION_TYPE_USER];
+    locationType = LOCATION_TYPE_CODES[ LOCATION_TYPE_USER ];
     workDirectory = "${java.io.tmpdir}";
-    onError = ON_ERROR_CODES[ON_ERROR_ABORT];
+    onError = ON_ERROR_CODES[ ON_ERROR_ABORT ];
     removeFiles = true;
 
-    dataType = DATA_TYPE_CODES[DATA_TYPE_CSV];
+    dataType = DATA_TYPE_CODES[ DATA_TYPE_CSV ];
     trimWhitespace = false;
     errorColumnMismatch = true;
     stripNull = false;
@@ -962,46 +967,46 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    *
    * @param rep       The repository
    * @param metaStore The metastore
-   * @param id_step   The ID of the step
+   * @param idStep   The ID of the step
    * @param databases The list of the databases
    * @throws KettleException
    */
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId idStep, List<DatabaseMeta> databases )
     throws KettleException {
     try {
-      databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, CONNECTION, databases );
-      targetSchema = rep.getStepAttributeString( id_step, TARGET_SCHEMA );
-      targetTable = rep.getStepAttributeString( id_step, TARGET_TABLE );
-      locationType = rep.getJobEntryAttributeString( id_step, LOCATION_TYPE );
-      stageName = rep.getStepAttributeString( id_step, STAGE_NAME );
-      workDirectory = rep.getStepAttributeString( id_step, WORK_DIRECTORY );
-      onError = rep.getStepAttributeString( id_step, ON_ERROR );
-      errorLimit = rep.getStepAttributeString( id_step, ERROR_LIMIT );
-      splitSize = rep.getStepAttributeString( id_step, SPLIT_SIZE );
-      removeFiles = rep.getStepAttributeBoolean( id_step, REMOVE_FILES );
+      databaseMeta = rep.loadDatabaseMetaFromStepAttribute( idStep, CONNECTION, databases );
+      targetSchema = rep.getStepAttributeString( idStep, TARGET_SCHEMA );
+      targetTable = rep.getStepAttributeString( idStep, TARGET_TABLE );
+      locationType = rep.getJobEntryAttributeString( idStep, LOCATION_TYPE );
+      stageName = rep.getStepAttributeString( idStep, STAGE_NAME );
+      workDirectory = rep.getStepAttributeString( idStep, WORK_DIRECTORY );
+      onError = rep.getStepAttributeString( idStep, ON_ERROR );
+      errorLimit = rep.getStepAttributeString( idStep, ERROR_LIMIT );
+      splitSize = rep.getStepAttributeString( idStep, SPLIT_SIZE );
+      removeFiles = rep.getStepAttributeBoolean( idStep, REMOVE_FILES );
 
-      dataType = rep.getStepAttributeString( id_step, DATA_TYPE );
-      trimWhitespace = rep.getStepAttributeBoolean( id_step, TRIM_WHITESPACE );
-      nullIf = rep.getStepAttributeString( id_step, NULL_IF );
-      errorColumnMismatch = rep.getStepAttributeBoolean( id_step, ERROR_COLUMN_MISMATCH );
+      dataType = rep.getStepAttributeString( idStep, DATA_TYPE );
+      trimWhitespace = rep.getStepAttributeBoolean( idStep, TRIM_WHITESPACE );
+      nullIf = rep.getStepAttributeString( idStep, NULL_IF );
+      errorColumnMismatch = rep.getStepAttributeBoolean( idStep, ERROR_COLUMN_MISMATCH );
 
-      stripNull = rep.getStepAttributeBoolean( id_step, STRIP_NULL );
-      ignoreUtf8 = rep.getStepAttributeBoolean( id_step, IGNORE_UTF_8 );
-      allowDuplicateElements = rep.getStepAttributeBoolean( id_step, ALLOW_DUPLICATE_ELEMENT );
-      enableOctal = rep.getStepAttributeBoolean( id_step, ENABLE_OCTAL );
+      stripNull = rep.getStepAttributeBoolean( idStep, STRIP_NULL );
+      ignoreUtf8 = rep.getStepAttributeBoolean( idStep, IGNORE_UTF_8 );
+      allowDuplicateElements = rep.getStepAttributeBoolean( idStep, ALLOW_DUPLICATE_ELEMENT );
+      enableOctal = rep.getStepAttributeBoolean( idStep, ENABLE_OCTAL );
 
-      specifyFields = rep.getStepAttributeBoolean( id_step, SPECIFY_FIELDS );
-      jsonField = rep.getStepAttributeString( id_step, JSON_FIELD );
+      specifyFields = rep.getStepAttributeBoolean( idStep, SPECIFY_FIELDS );
+      jsonField = rep.getStepAttributeString( idStep, JSON_FIELD );
 
-      int nrfields = rep.countNrStepAttributes( id_step, STREAM_FIELD );
+      int nrfields = rep.countNrStepAttributes( idStep, STREAM_FIELD );
 
       allocate( nrfields );
 
       for ( int i = 0; i < nrfields; i++ ) {
-        snowflakeBulkLoaderFields[i] = new SnowflakeBulkLoaderField();
+        snowflakeBulkLoaderFields[ i ] = new SnowflakeBulkLoaderField();
 
-        snowflakeBulkLoaderFields[i].setStreamField( rep.getStepAttributeString( id_step, i, STREAM_FIELD ) );
-        snowflakeBulkLoaderFields[i].setTableField( rep.getStepAttributeString( id_step, i, TABLE_FIELD ) );
+        snowflakeBulkLoaderFields[ i ].setStreamField( rep.getStepAttributeString( idStep, i, STREAM_FIELD ) );
+        snowflakeBulkLoaderFields[ i ].setTableField( rep.getStepAttributeString( idStep, i, TABLE_FIELD ) );
       }
 
     } catch ( Exception e ) {
@@ -1014,58 +1019,59 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
    *
    * @param rep               The repository
    * @param metaStore         The mestatore
-   * @param id_transformation The ID of the transformation
-   * @param id_step           The ID of the step
+   * @param idTransformation The ID of the transformation
+   * @param idStep           The ID of the step
    * @throws KettleException
    */
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId idTransformation, ObjectId idStep )
     throws KettleException {
     try {
-      rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", databaseMeta );
-      rep.saveStepAttribute( id_transformation, id_step, TARGET_SCHEMA, targetSchema );
-      rep.saveStepAttribute( id_transformation, id_step, TARGET_TABLE, targetTable );
-      rep.saveStepAttribute( id_transformation, id_step, LOCATION_TYPE, locationType );
-      rep.saveStepAttribute( id_transformation, id_step, STAGE_NAME, stageName );
-      rep.saveStepAttribute( id_transformation, id_step, WORK_DIRECTORY, workDirectory );
-      rep.saveStepAttribute( id_transformation, id_step, ON_ERROR, onError );
-      rep.saveStepAttribute( id_transformation, id_step, ERROR_LIMIT, errorLimit );
-      rep.saveStepAttribute( id_transformation, id_step, SPLIT_SIZE, splitSize );
-      rep.saveStepAttribute( id_transformation, id_step, REMOVE_FILES, removeFiles );
-      rep.saveStepAttribute( id_transformation, id_step, DATA_TYPE, dataType );
-      rep.saveStepAttribute( id_transformation, id_step, TRIM_WHITESPACE, trimWhitespace );
-      rep.saveStepAttribute( id_transformation, id_step, NULL_IF, nullIf );
-      rep.saveStepAttribute( id_transformation, id_step, ERROR_COLUMN_MISMATCH, errorColumnMismatch );
-      rep.saveStepAttribute( id_transformation, id_step, STRIP_NULL, stripNull );
-      rep.saveStepAttribute( id_transformation, id_step, IGNORE_UTF_8, ignoreUtf8 );
-      rep.saveStepAttribute( id_transformation, id_step, ALLOW_DUPLICATE_ELEMENT, allowDuplicateElements );
-      rep.saveStepAttribute( id_transformation, id_step, ENABLE_OCTAL, enableOctal );
-      rep.saveStepAttribute( id_transformation, id_step, SPECIFY_FIELDS, specifyFields );
-      rep.saveStepAttribute( id_transformation, id_step, JSON_FIELD, jsonField );
+      rep.saveDatabaseMetaStepAttribute( idTransformation, idStep, "id_connection", databaseMeta );
+      rep.saveStepAttribute( idTransformation, idStep, TARGET_SCHEMA, targetSchema );
+      rep.saveStepAttribute( idTransformation, idStep, TARGET_TABLE, targetTable );
+      rep.saveStepAttribute( idTransformation, idStep, LOCATION_TYPE, locationType );
+      rep.saveStepAttribute( idTransformation, idStep, STAGE_NAME, stageName );
+      rep.saveStepAttribute( idTransformation, idStep, WORK_DIRECTORY, workDirectory );
+      rep.saveStepAttribute( idTransformation, idStep, ON_ERROR, onError );
+      rep.saveStepAttribute( idTransformation, idStep, ERROR_LIMIT, errorLimit );
+      rep.saveStepAttribute( idTransformation, idStep, SPLIT_SIZE, splitSize );
+      rep.saveStepAttribute( idTransformation, idStep, REMOVE_FILES, removeFiles );
+      rep.saveStepAttribute( idTransformation, idStep, DATA_TYPE, dataType );
+      rep.saveStepAttribute( idTransformation, idStep, TRIM_WHITESPACE, trimWhitespace );
+      rep.saveStepAttribute( idTransformation, idStep, NULL_IF, nullIf );
+      rep.saveStepAttribute( idTransformation, idStep, ERROR_COLUMN_MISMATCH, errorColumnMismatch );
+      rep.saveStepAttribute( idTransformation, idStep, STRIP_NULL, stripNull );
+      rep.saveStepAttribute( idTransformation, idStep, IGNORE_UTF_8, ignoreUtf8 );
+      rep.saveStepAttribute( idTransformation, idStep, ALLOW_DUPLICATE_ELEMENT, allowDuplicateElements );
+      rep.saveStepAttribute( idTransformation, idStep, ENABLE_OCTAL, enableOctal );
+      rep.saveStepAttribute( idTransformation, idStep, SPECIFY_FIELDS, specifyFields );
+      rep.saveStepAttribute( idTransformation, idStep, JSON_FIELD, jsonField );
 
       for ( int i = 0; i < snowflakeBulkLoaderFields.length; i++ ) {
-        SnowflakeBulkLoaderField field = snowflakeBulkLoaderFields[i];
+        SnowflakeBulkLoaderField field = snowflakeBulkLoaderFields[ i ];
 
-        rep.saveStepAttribute( id_transformation, id_step, i, STREAM_FIELD, field.getStreamField() );
-        rep.saveStepAttribute( id_transformation, id_step, i, TABLE_FIELD, field.getTableField() );
+        rep.saveStepAttribute( idTransformation, idStep, i, STREAM_FIELD, field.getStreamField() );
+        rep.saveStepAttribute( idTransformation, idStep, i, TABLE_FIELD, field.getTableField() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
+      throw new KettleException( "Unable to save step information to the repository for id_step=" + idStep, e );
     }
   }
 
   /**
    * Check the step to make sure it is valid.  This is what is run when the user presses the check transformation
    * button in PDI
-   * @param remarks The list of remarks to add to
-   * @param transMeta The transformation metadata
-   * @param stepMeta The step metadata
-   * @param prev The metadata about the input stream
-   * @param input The input fields
-   * @param output The output fields
-   * @param info The metadata about the info stream
-   * @param space The variable space
+   *
+   * @param remarks    The list of remarks to add to
+   * @param transMeta  The transformation metadata
+   * @param stepMeta   The step metadata
+   * @param prev       The metadata about the input stream
+   * @param input      The input fields
+   * @param output     The output fields
+   * @param info       The metadata about the info stream
+   * @param space      The variable space
    * @param repository The repository
-   * @param metaStore The metastore
+   * @param metaStore  The metastore
    */
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
                      RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
@@ -1079,21 +1085,21 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
           PKG, "SnowflakeBulkLoadMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
-      String error_message = "";
-      boolean error_found = false;
+      String errorMessage = "";
+      boolean errorFound = false;
 
       // Starting from selected fields in ...
       for ( SnowflakeBulkLoaderField snowflakeBulkLoaderField : snowflakeBulkLoaderFields ) {
         int idx = prev.indexOfValue( snowflakeBulkLoaderField.getStreamField() );
         if ( idx < 0 ) {
-          error_message += "\t\t" + snowflakeBulkLoaderField.getStreamField() + Const.CR;
-          error_found = true;
+          errorMessage += "\t\t" + snowflakeBulkLoaderField.getStreamField() + Const.CR;
+          errorFound = true;
         }
       }
-      if ( error_found ) {
-        error_message =
-          BaseMessages.getString( PKG, "SnowflakeBulkLoadMeta.CheckResult.FieldsNotFound", error_message );
-        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepMeta );
+      if ( errorFound ) {
+        errorMessage =
+          BaseMessages.getString( PKG, "SnowflakeBulkLoadMeta.CheckResult.FieldsNotFound", errorMessage );
+        cr = new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, errorMessage, stepMeta );
         remarks.add( cr );
       } else {
         cr =
@@ -1134,6 +1140,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
 
   /**
    * Gets a list of fields in the database table
+   *
    * @param space The variable space
    * @return The metadata about the fields in the table.
    * @throws KettleException
@@ -1147,17 +1154,19 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
       try {
         db.connect();
 
-        if ( !Const.isEmpty( realTableName ) ) {
+        if ( !Utils.isEmpty( realTableName ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
 
           // Check if this table exists...
           if ( db.checkTableExists( schemaTable ) ) {
             return db.getTableFields( schemaTable );
           } else {
-            throw new KettleException( BaseMessages.getString( PKG, "SnowflakeBulkLoaderMeta.Exception.TableNotFound" ) );
+            throw new KettleException(
+              BaseMessages.getString( PKG, "SnowflakeBulkLoaderMeta.Exception.TableNotFound" ) );
           }
         } else {
-          throw new KettleException( BaseMessages.getString( PKG, "SnowflakeBulkLoaderMeta.Exception.TableNotSpecified" ) );
+          throw new KettleException(
+            BaseMessages.getString( PKG, "SnowflakeBulkLoaderMeta.Exception.TableNotSpecified" ) );
         }
       } catch ( Exception e ) {
         throw new KettleException(
@@ -1166,18 +1175,20 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
         db.disconnect();
       }
     } else {
-      throw new KettleException( BaseMessages.getString( PKG, "SnowflakeBulkLoaderMeta.Exception.ConnectionNotDefined" ) );
+      throw new KettleException(
+        BaseMessages.getString( PKG, "SnowflakeBulkLoaderMeta.Exception.ConnectionNotDefined" ) );
     }
 
   }
 
   /**
    * Gets the list of databases used by the step
+   *
    * @return The list of databases used by the step
    */
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( databaseMeta != null ) {
-      return new DatabaseMeta[]{ databaseMeta };
+      return new DatabaseMeta[] { databaseMeta };
     } else {
       return super.getUsedDatabaseConnections();
     }
@@ -1185,11 +1196,12 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
 
   /**
    * Gets the class that actually runs this step
-   * @param stepMeta The metadata about the step
+   *
+   * @param stepMeta          The metadata about the step
    * @param stepDataInterface The step data
-   * @param cnr The step number
-   * @param transMeta The metadata about the transformation
-   * @param trans The transformation instance
+   * @param cnr               The step number
+   * @param transMeta         The metadata about the transformation
+   * @param trans             The transformation instance
    * @return The class that actually runs the step
    */
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
@@ -1199,6 +1211,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
 
   /**
    * Gets the step data
+   *
    * @return The step data
    */
   public StepDataInterface getStepData() {
@@ -1207,20 +1220,21 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
 
   /**
    * Gets the Snowflake stage name based on the configured metadata
+   *
    * @param space The variable space
    * @return The Snowflake stage name to use
    */
   public String getStage( VariableSpace space ) {
-    if ( locationType.equals( LOCATION_TYPE_CODES[LOCATION_TYPE_USER] ) ) {
+    if ( locationType.equals( LOCATION_TYPE_CODES[ LOCATION_TYPE_USER ] ) ) {
       return "@~/" + space.environmentSubstitute( targetTable );
-    } else if ( locationType.equals( LOCATION_TYPE_CODES[LOCATION_TYPE_TABLE] ) ) {
-      if ( !Const.isEmpty( space.environmentSubstitute( targetSchema ) ) ) {
+    } else if ( locationType.equals( LOCATION_TYPE_CODES[ LOCATION_TYPE_TABLE ] ) ) {
+      if ( !Utils.isEmpty( space.environmentSubstitute( targetSchema ) ) ) {
         return "@" + space.environmentSubstitute( targetSchema ) + ".%" + space.environmentSubstitute( targetTable );
       } else {
         return "@%" + space.environmentSubstitute( targetTable );
       }
-    } else if ( locationType.equals( LOCATION_TYPE_CODES[LOCATION_TYPE_INTERNAL_STAGE] ) ) {
-      if ( !Const.isEmpty( space.environmentSubstitute( targetSchema ) ) ) {
+    } else if ( locationType.equals( LOCATION_TYPE_CODES[ LOCATION_TYPE_INTERNAL_STAGE ] ) ) {
+      if ( !Utils.isEmpty( space.environmentSubstitute( targetSchema ) ) ) {
         return "@" + space.environmentSubstitute( targetSchema ) + "." + space.environmentSubstitute( stageName );
       } else {
         return "@" + space.environmentSubstitute( stageName );
@@ -1231,7 +1245,8 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
 
   /**
    * Creates the copy statement used to load data into Snowflake
-   * @param space The variable space
+   *
+   * @param space     The variable space
    * @param filenames A list of filenames to load
    * @return The copy statement to load data into Snowflake
    * @throws KettleFileException
@@ -1241,7 +1256,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
     returnValue.append( "COPY INTO " );
 
     //Schema
-    if ( !Const.isEmpty( space.environmentSubstitute( targetSchema ) ) ) {
+    if ( !Utils.isEmpty( space.environmentSubstitute( targetSchema ) ) ) {
       returnValue.append( space.environmentSubstitute( targetSchema ) ).append( "." );
     }
 
@@ -1268,13 +1283,13 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
     returnValue.append( "FILE_FORMAT = ( TYPE = " );
 
     // CSV
-    if ( dataType.equals( DATA_TYPE_CODES[DATA_TYPE_CSV] ) ) {
+    if ( dataType.equals( DATA_TYPE_CODES[ DATA_TYPE_CSV ] ) ) {
       returnValue.append( "'CSV' FIELD_DELIMITER = ',' RECORD_DELIMITER = '\\n' ESCAPE = '\\\\' " );
       returnValue.append( "ESCAPE_UNENCLOSED_FIELD = '\\\\' FIELD_OPTIONALLY_ENCLOSED_BY='\"' " );
       returnValue.append( "SKIP_HEADER = 0 DATE_FORMAT = '" ).append( DATE_FORMAT_STRING ).append( "' " );
       returnValue.append( "TIMESTAMP_FORMAT = '" ).append( TIMESTAMP_FORMAT_STRING ).append( "' " );
       returnValue.append( "TRIM_SPACE = " ).append( trimWhitespace ).append( " " );
-      if ( !Const.isEmpty( nullIf ) ) {
+      if ( !Utils.isEmpty( nullIf ) ) {
         returnValue.append( "NULL_IF = (" );
         String[] nullIfStrings = space.environmentSubstitute( nullIf ).split( "," );
         boolean firstNullIf = true;
@@ -1293,7 +1308,7 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
       returnValue.append( "ERROR_ON_COLUMN_COUNT_MISMATCH = " ).append( errorColumnMismatch ).append( " " );
       returnValue.append( "COMPRESSION = 'GZIP' " );
 
-    } else if ( dataType.equals( DATA_TYPE_CODES[DATA_TYPE_JSON] ) ) {
+    } else if ( dataType.equals( DATA_TYPE_CODES[ DATA_TYPE_JSON ] ) ) {
       returnValue.append( "'JSON' COMPRESSION = 'GZIP' STRIP_OUTER_ARRAY = FALSE " );
       returnValue.append( "ENABLE_OCTAL = " ).append( enableOctal ).append( " " );
       returnValue.append( "ALLOW_DUPLICATE = " ).append( allowDuplicateElements ).append( " " );
@@ -1303,26 +1318,26 @@ public class SnowflakeBulkLoaderMeta extends BaseStepMeta implements StepMetaInt
     returnValue.append( ") " );
 
     returnValue.append( "ON_ERROR = " );
-    if ( onError.equals( ON_ERROR_CODES[ON_ERROR_ABORT] ) ) {
+    if ( onError.equals( ON_ERROR_CODES[ ON_ERROR_ABORT ] ) ) {
       returnValue.append( "'ABORT_STATEMENT' " );
-    } else if ( onError.equals( ON_ERROR_CODES[ON_ERROR_CONTINUE] ) ) {
+    } else if ( onError.equals( ON_ERROR_CODES[ ON_ERROR_CONTINUE ] ) ) {
       returnValue.append( "'CONTINUE' " );
-    } else if ( onError.equals( ON_ERROR_CODES[ON_ERROR_SKIP_FILE] )
-      || onError.equals( ON_ERROR_CODES[ON_ERROR_SKIP_FILE_PERCENT] ) ) {
+    } else if ( onError.equals( ON_ERROR_CODES[ ON_ERROR_SKIP_FILE ] )
+      || onError.equals( ON_ERROR_CODES[ ON_ERROR_SKIP_FILE_PERCENT ] ) ) {
       if ( Const.toDouble( space.environmentSubstitute( errorLimit ), 0 ) <= 0 ) {
         returnValue.append( "'SKIP_FILE' " );
       } else {
         returnValue.append( "'SKIP_FILE_" ).append( Const.toInt( space.environmentSubstitute( errorLimit ), 0 ) );
       }
-      if ( onError.equals( ON_ERROR_CODES[ON_ERROR_SKIP_FILE_PERCENT] ) ) {
+      if ( onError.equals( ON_ERROR_CODES[ ON_ERROR_SKIP_FILE_PERCENT ] ) ) {
         returnValue.append( "%' " );
       } else {
         returnValue.append( "' " );
       }
     }
 
-    if( ! Boolean.getBoolean( space.environmentSubstitute( DEBUG_MODE_VAR ) ) ) {
-      returnValue.append("PURGE = ").append(removeFiles).append(" ");
+    if ( !Boolean.getBoolean( space.environmentSubstitute( DEBUG_MODE_VAR ) ) ) {
+      returnValue.append( "PURGE = " ).append( removeFiles ).append( " " );
     }
 
     returnValue.append( ";" );

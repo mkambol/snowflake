@@ -77,7 +77,7 @@ import java.sql.ResultSet;
  */
 @SuppressWarnings( "FieldCanBeLocal" )
 public class WarehouseManagerDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = WarehouseManager.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static final Class<?> PKG = WarehouseManager.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final String[] MANAGEMENT_ACTION_DESCS = new String[]{
     BaseMessages.getString( PKG, "SnowflakeWarehouseManager.Dialog.Action.Create" ),
@@ -420,7 +420,6 @@ public class WarehouseManagerDialog extends JobEntryDialog implements JobEntryDi
     fdgCreateGroup.left = new FormAttachment( 0, 0 );
     fdgCreateGroup.right = new FormAttachment( 100, 0 );
     fdgCreateGroup.top = new FormAttachment( wAction, margin * 2 );
-    // fdgCreateGroup.bottom = new FormAttachment( 100, -margin * 2 );
     wCreateGroup.setLayoutData( fdgCreateGroup );
 
     // //////////////////////
@@ -684,7 +683,6 @@ public class WarehouseManagerDialog extends JobEntryDialog implements JobEntryDi
     fdgDropGroup.left = new FormAttachment( 0, 0 );
     fdgDropGroup.right = new FormAttachment( 100, 0 );
     fdgDropGroup.top = new FormAttachment( wAction, margin * 2 );
-    // fdgCreateGroup.bottom = new FormAttachment( 100, -margin * 2 );
     wDropGroup.setLayoutData( fdgDropGroup );
 
     // //////////////////////
@@ -723,7 +721,6 @@ public class WarehouseManagerDialog extends JobEntryDialog implements JobEntryDi
     fdgResumeGroup.left = new FormAttachment( 0, 0 );
     fdgResumeGroup.right = new FormAttachment( 100, 0 );
     fdgResumeGroup.top = new FormAttachment( wAction, margin * 2 );
-    // fdgCreateGroup.bottom = new FormAttachment( 100, -margin * 2 );
     wResumeGroup.setLayoutData( fdgResumeGroup );
 
     // //////////////////////
@@ -763,7 +760,6 @@ public class WarehouseManagerDialog extends JobEntryDialog implements JobEntryDi
     fdgSuspendGroup.left = new FormAttachment( 0, 0 );
     fdgSuspendGroup.right = new FormAttachment( 100, 0 );
     fdgSuspendGroup.top = new FormAttachment( wAction, margin * 2 );
-    // fdgCreateGroup.bottom = new FormAttachment( 100, -margin * 2 );
     wSuspendGroup.setLayoutData( fdgSuspendGroup );
 
     // //////////////////////
@@ -802,7 +798,6 @@ public class WarehouseManagerDialog extends JobEntryDialog implements JobEntryDi
     fdgAlterGroup.left = new FormAttachment( 0, 0 );
     fdgAlterGroup.right = new FormAttachment( 100, 0 );
     fdgAlterGroup.top = new FormAttachment( wAction, margin * 2 );
-    // fdgAlterGroup.bottom = new FormAttachment( 100, -margin * 2 );
     wAlterGroup.setLayoutData( fdgAlterGroup );
 
     // //////////////////////
@@ -1030,16 +1025,8 @@ public class WarehouseManagerDialog extends JobEntryDialog implements JobEntryDi
     } );
 
     // Add listeners
-    lsCancel = new Listener() {
-      public void handleEvent( Event e ) {
-        cancel();
-      }
-    };
-    lsOK = new Listener() {
-      public void handleEvent( Event e ) {
-        ok();
-      }
-    };
+    lsCancel = e -> cancel();
+    lsOK = e -> ok();
 
     wOK.addListener( SWT.Selection, lsOK );
     wCancel.addListener( SWT.Selection, lsCancel );
@@ -1048,7 +1035,7 @@ public class WarehouseManagerDialog extends JobEntryDialog implements JobEntryDi
     wName.addSelectionListener( lsDef );
     // Detect [X] or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
-      public void shellClosed( ShellEvent e ) {
+      @Override public void shellClosed( ShellEvent e ) {
         cancel();
       }
     } );
